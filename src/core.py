@@ -3,7 +3,7 @@ import base as b
 import datetime as dt 
 import pandas as pd 
 
-def replace_files():
+def replace_files(path_in):
     path_in = 'MeteorRadar/data/Cariri/'
     
     for fn in os.listdir(path_in):
@@ -38,14 +38,12 @@ def raw_file(infile):
             'k, ht': []
             }
     
-    for f in lines:
+    for ln in lines:
         
-        reader = f[:6].strip()
-        
-        line = f[6:].split()
-        
-        keys = list(data.keys())
-        if reader in keys:
+        reader = ln[:6].strip()
+        line = ln[6:].split()
+   
+        if reader in list(data.keys()):
             if len(line) == 24:
                 data[reader].extend(line)
             else:
@@ -65,10 +63,9 @@ def MeteorData(infile, fn):
         df['times'], unit = 'h')
     
     df.set_index('datetime', inplace = True)
-    df.drop(columns=['dt', 'times'], inplace = True)
+    df.drop(columns = ['dt', 'times'], inplace = True)
     df.rename(columns = {'k, ht': 'ht'}, inplace = True)
-    
-    df = df.replace(999.0, float('nan'))
+    df.replace(999.0, float('nan'), inplace = True)
     
     return df
 
@@ -93,3 +90,5 @@ def run_process():
         df = pd.concat(out)
         
         df.to_csv(f'{year}')
+    
+    return None 
