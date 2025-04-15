@@ -91,7 +91,7 @@ def run_process(year):
                     continue 
     df = pd.concat(out).sort_index()
     
-    df.to_csv(f'{year}')
+    df.to_csv(f'MeteorRadar/data/proc/{year}')
     
     return df
 
@@ -102,7 +102,7 @@ def main():
         run_process(year)
         
 
-year = 2018
-df = run_process(year)
+# year = 2018
+# df = run_process(year)
 
-df 
+# df 
