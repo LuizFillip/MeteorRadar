@@ -2,6 +2,9 @@ import os
 import base as b
 import datetime as dt 
 import pandas as pd 
+from tqdm import tqdm 
+
+root = 'MeteorRadar/data/Cariri'
 
 def replace_files(path_in):
     path_in = 'MeteorRadar/data/Cariri/'
@@ -69,26 +72,37 @@ def MeteorData(infile, fn):
     
     return df
 
-root = 'MeteorRadar/data/Cariri'
 
-def run_process():
+def run_process(year):
 
-    for year in range(2019, 2023):
-        dates = pd.date_range(
-            f'{year}-01-01', 
-            freq= '1M', periods = 12)
-        
-        out = []
-        for dn in dates:
-            mon = dn.strftime('%m')
-            infile = f'{root}/{dn.year}/{mon}/'
-           
-            for fn in os.listdir(infile):
-                if fn.endswith('hwd'): 
-                   out.append(MeteorData(infile, fn))
-         
-        df = pd.concat(out)
-        
-        df.to_csv(f'{year}')
+    path_yr = f'{root}/{year}'
     
-    return None 
+    out = []
+    for folder in os.listdir(path_yr):
+       
+        infile = f'{path_yr}/{folder}/'
+       
+        for fn in tqdm(os.listdir(infile), folder):
+            if fn.endswith('hwd'): 
+                try:
+                    out.append(MeteorData(infile, fn))
+                except:
+                    # print(fn)
+                    continue 
+    df = pd.concat(out).sort_index()
+    
+    df.to_csv(f'{year}')
+    
+    return df
+
+def main():
+    
+    for year in range(2019, 2023):
+        
+        run_process(year)
+        
+
+year = 2018
+df = run_process(year)
+
+df 
