@@ -87,7 +87,6 @@ def run_process(year):
                 try:
                     out.append(MeteorData(infile, fn))
                 except:
-                    # print(fn)
                     continue 
     df = pd.concat(out).sort_index()
     

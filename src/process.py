@@ -1,5 +1,5 @@
 import base as b 
-import spectral as sp
+# import spectral as sp
 import numpy as np 
 import matplotlib.pyplot as plt
 
@@ -21,17 +21,17 @@ def plot(df):
     spec.ax_spec.set(yticks = np.arange(2, 12, 2))
 
 
-year = 2018
-
-def meteor_data(year):
+def meteor_data(year, freq = '1H'):
     
     fname = f'MeteorRadar/data/proc/{year}'
     
     df = b.load(fname)
     
-    df = df[(df["ht"] >= 88) & (df["ht"] <= 92)]
-     
-    df = df.resample('3H').mean().interpolate()
+    df = df.between_time('21:00', '23:00')
+    
+    df = df[(df["ht"] >= 85) & (df["ht"] <= 95)]
+    
+    df = df.resample(freq).mean().interpolate()
     
     df['doy'] = df.index.day_of_year + (df.index.hour / 24)
     return df 
@@ -49,3 +49,27 @@ def main():
             path = f'SpectralData/Meteor/{year}_{p}'
             
             wv.fig.savefig(path)
+
+
+# main()
+import datetime as dt 
+
+path_to_save = 'SpectralData/Meteor/database/'
+
+year = 2021 
+
+freq = '1D'
+ 
+ds = meteor_data(year, freq)
+
+def save_results(ds):
+    ds = ds.set_index('doy')
+    
+    for parameter in ['zonal', 'merid']:
+        
+        fn = f'{freq}_{parameter}_{year}.txt'
+        ds.loc[:, [parameter]].to_csv(f'{path_to_save}{fn}', sep = ' ')
+
+# ds['merid'].plot() 
+
+# save_results(ds)
